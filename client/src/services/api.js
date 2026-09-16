@@ -1,9 +1,16 @@
 import axios from 'axios'
 
-const apiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '')
-const baseURL = apiUrl ? apiUrl + (apiUrl.endsWith('/api') ? '' : '/api') : '/api'
+const FALLBACK_API_BASE = 'https://my-portfolio-tnri.onrender.com/api'
 
-const api = axios.create({ baseURL })
+const apiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '')
+
+function resolveBaseUrl() {
+  if (apiUrl) return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`
+  if (import.meta.env.DEV) return '/api'
+  return FALLBACK_API_BASE
+}
+
+const api = axios.create({ baseURL: resolveBaseUrl() })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('portfolio-admin-token')
