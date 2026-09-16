@@ -1,8 +1,9 @@
 import axios from 'axios'
 
-const api = axios.create({
-  baseURL: '/api',
-})
+const apiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '')
+const baseURL = apiUrl ? apiUrl + (apiUrl.endsWith('/api') ? '' : '/api') : '/api'
+
+const api = axios.create({ baseURL })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('portfolio-admin-token')
